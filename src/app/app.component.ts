@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -42,6 +43,17 @@ export class AppComponent implements OnInit {
     // get has only one argument, because there is no request Body.
     // Peab subscribeima ikka ka, muidu päringut ei saadeta.
     this.http.get('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
+      .pipe(map(responseData => {
+        const postsArray = [];
+        for (const key in responseData) {
+          if (responseData.hasOwnProperty(key)) {
+            // Teeme uue objekti saadud data käesolevale key-le vastavast objektist
+            // ning saame ka lisada lisa key-value paare.
+            postsArray.push({...responseData[key], id: key});
+          }
+          return postsArray;
+        }
+      }))
       .subscribe(posts => {
         console.log(posts);
       });
