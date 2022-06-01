@@ -22,7 +22,9 @@ export class AppComponent implements OnInit {
     console.log(postData);
     // http requests are wrapped by Observables. You need to subscribe to it.
     // Muidu Angular arvab, et keegi pole vastusest huvitatud ja ei saada isegi päringut.
-    this.http.post(
+    // Kõigi päringute puhul saab määrata vastuse Body tüübi ka.
+    // See annab ka edasi vastuse töötlemise juures parema autocompletioni.
+    this.http.post<{ name: string }>(
       // Siin .json on API aadressi lõpus, lihtsalt kuna Firebaseil endal on nii vaja
       'https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
       // Siin Angulari HttpClient teeb meie JS objektist ise JSONi ja saadab JSON datat.
@@ -43,9 +45,13 @@ export class AppComponent implements OnInit {
   private fetchPosts() {
     // get has only one argument, because there is no request Body.
     // Peab subscribeima ikka ka, muidu päringut ei saadeta.
-    this.http.get('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
-    // map tagastab ka Observable-i, seega saame subscribeida all pool.
-      .pipe(map((responseData: { [key: string]: Post }) => {
+    // Selline [key: string] väljend [] sees tähendab, et see on mingi
+    // random string, millel pole nime.
+    this.http
+      // get järel <> sees saab ette anda vastuse Body tüübi TSle.
+      .get<{ [key: string]: Post }>('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
+      // map tagastab ka Observable-i, seega saame subscribeida all pool.
+      .pipe(map(responseData => {
         const postsArray: Post[] = [];
         for (const key in responseData) {
           if (responseData.hasOwnProperty(key)) {
