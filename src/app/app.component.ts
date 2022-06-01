@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { Post } from './post.model';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,7 @@ export class AppComponent implements OnInit {
     this.fetchPosts();
   }
 
-  onCreatePost(postData: { title: string; content: string }) {
+  onCreatePost(postData: Post) {
     // Send Http request
     console.log(postData);
     // http requests are wrapped by Observables. You need to subscribe to it.
@@ -43,8 +44,9 @@ export class AppComponent implements OnInit {
     // get has only one argument, because there is no request Body.
     // Peab subscribeima ikka ka, muidu päringut ei saadeta.
     this.http.get('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
-      .pipe(map(responseData => {
-        const postsArray = [];
+    // map tagastab ka Observable-i, seega saame subscribeida all pool.
+      .pipe(map((responseData: { [key: string]: Post }) => {
+        const postsArray: Post[] = [];
         for (const key in responseData) {
           if (responseData.hasOwnProperty(key)) {
             // Teeme uue objekti saadud data käesolevale key-le vastavast objektist
