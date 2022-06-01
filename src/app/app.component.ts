@@ -59,8 +59,8 @@ export class AppComponent implements OnInit {
             // ning saame ka lisada lisa key-value paare.
             postsArray.push({...responseData[key], id: key});
           }
-          return postsArray;
         }
+        return postsArray;
       }))
       .subscribe(posts => {
         console.log(posts);
