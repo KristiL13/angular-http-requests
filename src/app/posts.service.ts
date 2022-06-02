@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -46,9 +46,14 @@ export class PostsService {
     // Set up the Observable in the service, but subscribe in the component.
     return this.http
       // get järel <> sees saab ette anda vastuse Body tüübi TSle.
-      .get<{ [key: string]: Post }>('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
-      // map tagastab ka Observable-i, seega saame subscribeida all pool.
+      .get<{ [key: string]: Post }>('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+        // siin saan confida oma päringut, s.h. määrata custom headerit.
+        {
+          headers: new HttpHeaders({ 'Custom-Header': 'Hello' })
+        }
+      )
       .pipe(
+        // map tagastab ka Observable-i, seega saame subscribeida all pool.
         map(responseData => {
           const postsArray: Post[] = [];
           for (const key in responseData) {
