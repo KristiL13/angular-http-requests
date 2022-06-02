@@ -13,11 +13,11 @@ export class AuthInterceptorService implements HttpInterceptor {
       console.log('siis ära tee intercepti või selle mingit osa, või just tee');
     }
 
-    console.log('request is on its way');
+    // console.log('request is on its way');
 
     // request ise on immutable. Aga võin siin luua uue ja saata päringu sellega nt.
     // clone'i sees saan muuta kõiki olulisi asju.
-    console.log(request.url);
+    // console.log(request.url);
     const modifiedRequest = request.clone({
       // url: 'some-new-url',
       // kui tahan lisada olemasolevale headerile midagi, siis nii:
@@ -31,13 +31,15 @@ export class AuthInterceptorService implements HttpInterceptor {
     // Kui tahan midagi response-iga teha, lisan pipei.
     // Siin võiks kasutada ka map-i ja transformeerida vastust. Peab lihtsalt ise
     // veendunud olema, et ei lõhu oma appi ära :D
-    return next.handle(modifiedRequest).pipe(tap(event => {
-      console.log(event);
-      if (event.type === HttpEventType.Response) {
-        console.log('Response arrive, body data: ');
-        console.log(event.body);
-      }
-    }));
+    return next.handle(modifiedRequest)
+      // .pipe(tap(event => {
+      //   console.log(event);
+      //   if (event.type === HttpEventType.Response) {
+      //     console.log('Response arrive, body data: ');
+      //     console.log(event.body);
+      //   }
+      // }))
+    ;
 
     // return next.handle(request); // calling next with the request object is necessary
     // to let the request continue. And I need to return the result to REALLY let it
