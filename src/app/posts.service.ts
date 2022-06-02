@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { Post } from './post.model';
 
 @Injectable({
@@ -26,10 +26,18 @@ export class PostsService {
       // Siin .json on API aadressi lõpus, lihtsalt kuna Firebaseil endal on nii vaja
       'https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
       // Siin Angulari HttpClient teeb meie JS objektist ise JSONi ja saadab JSON datat.
-      postData
+      postData,
+      {
+        // Siin määran, millist vastust tahan.
+        // body tähendab, et ainult response body, ehk data objekt.
+        // observe: 'body'
+        observe: 'response' // kogu vastus, koos headeri, statuse jnega
+      }
     ).subscribe({
       next: responseData => {
         console.log(responseData);
+        console.log(responseData.body); // kui observe: 'response' puhul tahaks sama
+        // asja logida nagu enne.
       },
       error: error => {
         this.error.next(error.message);
@@ -94,6 +102,15 @@ export class PostsService {
   }
 
   deletePosts() {
-    return this.http.delete('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json');
+    return this.http.delete(
+      'https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+      {
+        observe: 'events'
+      }
+      ).pipe(
+        tap(event => {
+          console.log(event);
+        })
+      );
   }
 }
