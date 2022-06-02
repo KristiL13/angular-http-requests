@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Post } from './post.model';
 
@@ -7,6 +8,7 @@ import { Post } from './post.model';
   providedIn: 'root' // moodsam provideimise lahendus
 })
 export class PostsService {
+  error = new Subject<string>();
 
   constructor(private http: HttpClient) {}
 
@@ -25,8 +27,13 @@ export class PostsService {
       'https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
       // Siin Angulari HttpClient teeb meie JS objektist ise JSONi ja saadab JSON datat.
       postData
-    ).subscribe(responseData => {
-      console.log(responseData);
+    ).subscribe({
+      next: responseData => {
+        console.log(responseData);
+      },
+      error: error => {
+        this.error.next(error.message);
+      }
     });
   }
 
