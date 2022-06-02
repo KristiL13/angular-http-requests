@@ -43,24 +43,32 @@ export class AppComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.errorSub.unsubscribe();
-  }
-
   private fetchPosts() {
     // Keep the UI and component/template related stuff in the component.
     // If I care about the response and the response status, then
     // having it split between service and component is useful.
     this.isFetching = true;
-    this.postsService.fetchPosts().subscribe({
-      next: (posts) => {
+    this.postsService.fetchPosts().subscribe(
+      { // uus
+      // uus:
+      next: posts => {
+      // vana:
+      // posts => {
         this.isFetching = false;
         this.loadedPosts = posts;
       },
-      error: (error) => {
+      // uus:
+      error: error => {
+      // vana:
+      // error => {
         this.error = error.message;
         console.log(error);
       }
-    });
+    } // uus
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.errorSub.unsubscribe();
   }
 }

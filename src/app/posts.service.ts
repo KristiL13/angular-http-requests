@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Subject, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { Post } from './post.model';
 
 @Injectable({
@@ -48,17 +48,30 @@ export class PostsService {
       // get järel <> sees saab ette anda vastuse Body tüübi TSle.
       .get<{ [key: string]: Post }>('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
       // map tagastab ka Observable-i, seega saame subscribeida all pool.
-      .pipe(map(responseData => {
-        const postsArray: Post[] = [];
-        for (const key in responseData) {
-          if (responseData.hasOwnProperty(key)) {
-            // Teeme uue objekti saadud data käesolevale key-le vastavast objektist
-            // ning saame ka lisada lisa key-value paare.
-            postsArray.push({...responseData[key], id: key});
+      .pipe(
+        map(responseData => {
+          const postsArray: Post[] = [];
+          for (const key in responseData) {
+            if (responseData.hasOwnProperty(key)) {
+              // Teeme uue objekti saadud data käesolevale key-le vastavast objektist
+              // ning saame ka lisada lisa key-value paare.
+              postsArray.push({...responseData[key], id: key});
+            }
           }
-        }
-        return postsArray;
-      }));
+          return postsArray;
+        }),
+        // Siin saame täpselt sama vea info, mida subscribeimisel saab.
+        catchError(errorResponse => {
+          // Siin on võimalik ka kasutada Subjectit ja teha .next errormessagega.
+          // Aga siin võib ka hoopis saata veateate nt analüütika serverisse, logida vmt.
+          // Samas see tuleb pärast tagasi anda, nii nagu mapis tuleb midagi tagastada.
+          // throwError tekitab uue Observablei wrappides errorit.
+          // vana:
+          // return throwError(errorResponse);
+          // uus:
+          return throwError(() => new Error(errorResponse));
+        })
+      );
   }
 
   deletePosts() {
