@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -38,6 +38,11 @@ export class PostsService {
   }
 
   fetchPosts() {
+    // Teine variant parameetrite lisamiseks:
+    let searchParams = new HttpParams();
+    searchParams = searchParams.append('print', 'pretty'); // response on ilusam
+    searchParams = searchParams.append('custom', 'key'); // see ei tee midagi Firebaseis
+    // jne
     // here i will send my request
     // get has only one argument, because there is no request Body.
     // Peab subscribeima ikka ka, muidu päringut ei saadeta.
@@ -49,7 +54,15 @@ export class PostsService {
       .get<{ [key: string]: Post }>('https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
         // siin saan confida oma päringut, s.h. määrata custom headerit.
         {
-          headers: new HttpHeaders({ 'Custom-Header': 'Hello' })
+          headers: new HttpHeaders({ 'Custom-Header': 'Hello' }),
+          // adding query parameters
+          // teine meetod:
+          params: searchParams
+          // esimene meetod:
+          // params: new HttpParams().set('print', 'pretty') // this sets how
+          // Firebase returns it's data. Selle oleks võinud muidugi panna ise
+          // ka üles urli lõppu, sest params nüüd paneb ta ka sinna.
+          // sama kui panna ?print=pretty&key=value jne urli lõppu. Siin nii on ilusam.
         }
       )
       .pipe(
