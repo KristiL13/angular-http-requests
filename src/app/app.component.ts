@@ -43,6 +43,10 @@ export class AppComponent implements OnInit, OnDestroy {
       });
   }
 
+  onHandleError() {
+    this.error = null;
+  }
+
   private fetchPosts() {
     // Keep the UI and component/template related stuff in the component.
     // If I care about the response and the response status, then
@@ -61,6 +65,7 @@ export class AppComponent implements OnInit, OnDestroy {
       error: error => {
       // vana:
       // error => {
+        this.isFetching = false;
         this.error = error.message;
         console.log(error);
       }
