@@ -14,7 +14,23 @@ export class AuthInterceptorService implements HttpInterceptor {
     }
 
     console.log('request is on its way');
-    return next.handle(request); // calling next with the request object is necessary
+
+    // request ise on immutable. Aga võin siin luua uue ja saata päringu sellega nt.
+    // clone'i sees saan muuta kõiki olulisi asju.
+    console.log(request.url);
+    const modifiedRequest = request.clone({
+      // url: 'some-new-url',
+      // kui tahan lisada olemasolevale headerile midagi, siis nii:
+      headers: request.headers.append('Auth', 'asi'),
+      // võiksin siin ka hoopis uue headeri teha
+      // või parameetreid lisada...
+      // params: 
+    });
+    return next.handle(modifiedRequest);
+    // Kui tahan muuta headerit nt ainult teatud tingimustel, võin muuta seda nt
+    // kasutades ifi ja urli väärtust.
+
+    // return next.handle(request); // calling next with the request object is necessary
     // to let the request continue. And I need to return the result to REALLY let it
     // continue.
   }
