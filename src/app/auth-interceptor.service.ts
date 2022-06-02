@@ -1,5 +1,5 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 
 export class AuthInterceptorService implements HttpInterceptor {
   // This is a function that will forward the request and response:
@@ -26,12 +26,21 @@ export class AuthInterceptorService implements HttpInterceptor {
       // või parameetreid lisada...
       // params: 
     });
-    return next.handle(modifiedRequest);
     // Kui tahan muuta headerit nt ainult teatud tingimustel, võin muuta seda nt
     // kasutades ifi ja urli väärtust.
+    // Kui tahan midagi response-iga teha, lisan pipei.
+    // Siin võiks kasutada ka map-i ja transformeerida vastust. Peab lihtsalt ise
+    // veendunud olema, et ei lõhu oma appi ära :D
+    return next.handle(modifiedRequest).pipe(tap(event => {
+      console.log(event);
+      if (event.type === HttpEventType.Response) {
+        console.log('Response arrive, body data: ');
+        console.log(event.body);
+      }
+    }));
 
     // return next.handle(request); // calling next with the request object is necessary
     // to let the request continue. And I need to return the result to REALLY let it
-    // continue.
+    // continue. handle tagastab Observable'i.
   }
 }
