@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
@@ -105,11 +105,26 @@ export class PostsService {
     return this.http.delete(
       'https://ng-complete-guide-408bf-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
       {
-        observe: 'events'
+        observe: 'events',
+        responseType: 'json' // see on default väärtus
+        // responseType: 'text' // las see olla text, ära tee sellest JS objekti
+        // nt jsoni puhul: null, text puhul "null" - string lihtsalt.
+        // Igal pool isegi ei saa texti kasutada, kuna ootab JS objekti nt või
+        // tahan pärast kasutada objektist sisu võtmete järgi.
+        // Kui tegelikult tahan teksti saada vastuseks või ise parsida pärast poole
+        // saadud vastust lahti, siis on mõistlik kasutada texti.
+        // responseType: 'blob' // kui on fail
       }
       ).pipe(
         tap(event => {
           console.log(event);
+          if (event.type === HttpEventType.Sent) {
+            // mingi tegevus, kui lihtsalt päring saadeti.
+          }
+          if (event.type === HttpEventType.Response) {
+            // Kas sain Response vastu, kui jah, siis tee seda sisu.
+            console.log(event.body);
+          }
         })
       );
   }
