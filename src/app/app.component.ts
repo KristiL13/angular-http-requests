@@ -43,12 +43,15 @@ export class AppComponent implements OnInit {
     // If I care about the response and the response status, then
     // having it split between service and component is useful.
     this.isFetching = true;
-    this.postsService.fetchPosts().subscribe(posts => {
-      this.isFetching = false;
-      this.loadedPosts = posts;
-    }, error => {
-      this.error = error.message;
-      console.log(error);
+    this.postsService.fetchPosts().subscribe({
+      next: (posts) => {
+        this.isFetching = false;
+        this.loadedPosts = posts;
+      },
+      error: (error) => {
+        this.error = error.message;
+        console.log(error);
+      }
     });
   }
 }
