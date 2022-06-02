@@ -66,6 +66,7 @@ export class PostsService {
           // Aga siin võib ka hoopis saata veateate nt analüütika serverisse, logida vmt.
           // Samas see tuleb pärast tagasi anda, nii nagu mapis tuleb midagi tagastada.
           // throwError tekitab uue Observablei wrappides errorit.
+          // Kasulik kasutada eriti, kui on vaja teha midagi nt backis või mujal ka veaga.
           // vana:
           // return throwError(errorResponse);
           // uus:
